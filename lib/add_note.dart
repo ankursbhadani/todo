@@ -20,36 +20,60 @@ class _AddNoteState extends State<AddNote> {
         title: Text("Create Note"),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              maxLines: 3,
-              controller: noteController,
-              keyboardType: TextInputType.text,
-              maxLength: 800,
-              decoration: const InputDecoration(
-                labelText: "Note", // Changed label to labelText
+      body: Center(
+        child: Column(
+
+          crossAxisAlignment:CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IntrinsicWidth(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 1.0,
+                      ),
+                    ),
+                  ),
+                  child: TextFormField(
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    controller: noteController,
+                    keyboardType: TextInputType.text,
+                    maxLength: 800,
+                    decoration: const InputDecoration(
+                        labelText: "Note",
+                        hintText: "Text goes here",
+                      border: InputBorder.none
+                    ),
+                  ),
+                ),
               ),
+
             ),
-          ),
-          SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: () {
-              // Call onSave callback with entered note
-              String note = noteController.text;
-              widget.onSave(note);
-              // Save note to SharedPreferences
-              _saveNoteToPrefs(note);
-              // Clear text field after saving
-              noteController.clear();
-              // Close the bottom sheet
-              Navigator.of(context, rootNavigator: true).pop();
-            },
-            child: Text("Save"),
-          ),
-        ],
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                String note = noteController.text;
+                if(note.isNotEmpty){
+                  widget.onSave(note);
+                  _saveNoteToPrefs(note);
+                  noteController.clear();
+                  Navigator.of(context, rootNavigator: true).pop();
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please Enter Valid Input.'),
+                    ),
+                  );
+                }
+
+              },
+              child: Text("Save"),
+            ),
+          ],
+        ),
       ),
     );
   }
