@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:todo/serch_note.dart';
 import 'add_note.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'data.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -22,21 +25,19 @@ class _HomeState extends State<Home> {
   }
 
   _getNotesFromFirestore() {
-    FirebaseFirestore.instance.collection('notes').snapshots().listen((snapshot) {
-      List<String> notes = snapshot.docs
-          .map((doc) => (doc.data() as Map<String, dynamic>?)?['note'] as String?)
-          .where((note) => note != null)
-          .map((note) => note!)
-          .toList();
+    GetData getData = GetData();
+    getData.getNotesFromFirestore().listen((List<String> notes) {
       setState(() {
         _notes = notes;
       });
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text("To-Do List"),
         centerTitle: true,
       ),
@@ -73,8 +74,8 @@ class _HomeState extends State<Home> {
             label: 'New Task',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Important',
+            icon: Icon(Icons.search),
+            label: 'Search',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -82,6 +83,9 @@ class _HomeState extends State<Home> {
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
+            if(index==2){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SearchScreen()));
+            }
           });
         },
       ),
